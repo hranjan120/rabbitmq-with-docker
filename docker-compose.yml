@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+
+  notification-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8001:8001"
+    restart: always
+    depends_on:
+      - "rabbitmq3"
+    volumes:
+      - .:/app
+      - /app/notification-service/node_modules
+    networks:
+        - ecom_net
+
+  user-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./user-service
+    container_name: user-service
+    ports:
+      - "8002:8002"
+    restart: always
+    depends_on:
+      - "rabbitmq3"
+    command:
+      - '/bin/sh'
+      - '-c'
+      - '/bin/sleep 30 && npm "start"'
+    volumes:
+      - .:/app
+      - /app/user-service/node_modules
+    networks:
+        - ecom_net
+
+  rabbitmq3:
+    hostname: rabbitmq3
+    image: rabbitmq:3.11.5-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest1234
+    networks:
+        - ecom_net
+
+
+######################
+networks:
+  ecom_net:
+    driver: bridge
+    ipam:
+      driver: default
