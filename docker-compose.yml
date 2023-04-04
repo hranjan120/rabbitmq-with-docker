@@ -11,6 +11,10 @@ services:
     restart: always
     depends_on:
       - "rabbitmq3"
+    command:
+      - '/bin/sh'
+      - '-c'
+      - '/bin/sleep 30 && npm run "dev"'
     volumes:
       - .:/app
       - /app/notification-service/node_modules
@@ -30,7 +34,7 @@ services:
     command:
       - '/bin/sh'
       - '-c'
-      - '/bin/sleep 30 && npm "start"'
+      - '/bin/sleep 30 && npm run "dev"'
     volumes:
       - .:/app
       - /app/user-service/node_modules
